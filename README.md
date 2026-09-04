@@ -1,68 +1,203 @@
-# Car Price Prediction API
+# 🚗 Car Price Prediction API
 
-A FastAPI service that predicts a used car's selling price with a
-RandomForest model, plus a small Streamlit UI that calls it.
+<p align="center">
+  <img src="assets/car-price.png" alt="Car Price Prediction" width="100%">
+</p>
 
-## Project structure
+<p align="center">
+  <strong>Machine Learning powered used car price prediction API built with FastAPI and RandomForest.</strong>
+</p>
 
-```
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-API-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Scikit--learn-ML-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="Scikit-learn">
+  <img src="https://img.shields.io/badge/Streamlit-UI-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit">
+  <img src="https://img.shields.io/badge/uv-Package_Manager-6E56CF?style=for-the-badge&logo=uv&logoColor=white" alt="uv">
+</p>
+
+---
+
+## 📌 Overview
+
+**Car Price Prediction API** is a machine learning project that predicts the
+selling price of a used car based on its characteristics.
+
+The project provides:
+
+- A **RandomForest regression model** for price prediction.
+- A **FastAPI backend** exposing the ML model through a REST API.
+- A **Streamlit frontend** for easy interaction with the prediction API.
+- A model training pipeline for retraining the model using the dataset.
+- Proper feature alignment between training and inference.
+- Modern Python dependency management using **uv**.
+
+The project is designed with a clean and modular structure so that the
+machine learning model can be easily trained, tested, and served through an API.
+
+---
+
+## ✨ Features
+
+- 🤖 **RandomForest Regression** for used car price prediction
+- ⚡ **FastAPI** REST API
+- 🎨 **Streamlit** interactive frontend
+- 📊 Used car price prediction
+- 🧠 Automated preprocessing
+- 🔤 One-hot encoding for categorical features
+- 📐 Consistent feature ordering during inference
+- 🔄 Model retraining support
+- 🧩 Pydantic request and response validation
+- 📦 Modern Python packaging with `pyproject.toml`
+- ⚡ Fast dependency management with `uv`
+- 📁 Clean and modular project structure
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| **Python** | Programming language |
+| **FastAPI** | Backend REST API |
+| **Scikit-learn** | Machine Learning |
+| **RandomForest** | Regression model |
+| **Pydantic** | Request/response validation |
+| **Streamlit** | Interactive frontend |
+| **uv** | Python package and dependency management |
+| **Pickle** | Model artifact storage |
+
+---
+
+## 🏗️ Project Structure
+
+```text
 car-price-api/
-├── pyproject.toml           # package + dependency config
-├── README.md
+│
+├── assets/
+│   └── car-price-prediction.png
+│
 ├── data/
-│   └── cardekho_data.csv    # training data
+│   └── cardekho_data.csv
+│
 ├── models/
-│   ├── random_forest_model.pkl   # trained model
-│   └── feature_columns.pkl       # training column order (for inference alignment)
-└── src/
-    └── car_price_api/
-        ├── __init__.py
-        ├── main.py           # FastAPI app (/, /predict)
-        ├── model.py          # loads artifacts, preprocesses input, predicts
-        ├── schema.py         # pydantic request/response models
-        ├── train.py          # retrains the model from data/cardekho_data.csv
-        └── streamlit_app.py  # Streamlit front end
+│   ├── random_forest_model.pkl
+│   └── feature_columns.pkl
+│
+├── src/
+│   └── car_price_api/
+│       ├── __init__.py
+│       ├── main.py
+│       ├── model.py
+│       ├── schema.py
+│       ├── train.py
+│       └── streamlit_app.py
+│
+├── .gitignore
+├── pyproject.toml
+├── uv.lock
+└── README.md
 ```
 
-## Setup
+---
+
+## 🚀 Quick Start
+
+### 1. Clone the repository
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -e .
+git clone https://github.com/<your-username>/car-price-api.git
+cd car-price-api
 ```
 
-## Run the API
+### 2. Install dependencies with uv
 
 ```bash
-uvicorn car_price_api.main:app --reload
+uv sync
 ```
 
-- `GET /` → health check
-- `POST /predict` → body matches `CarFeatures` in `schema.py`, returns `{"prediction_price": <float>}`
-- Interactive docs: http://127.0.0.1:8000/docs
+This creates a `.venv` and installs everything from `pyproject.toml` / `uv.lock`.
 
-## Run the Streamlit UI
+### 3. Run the API
+
+```bash
+uv run uvicorn car_price_api.main:app --reload
+```
+
+- Health check: `GET http://127.0.0.1:8000/`
+- Interactive docs: `http://127.0.0.1:8000/docs`
+
+### 4. Run the Streamlit UI
 
 In a second terminal (with the API already running):
 
 ```bash
-streamlit run src/car_price_api/streamlit_app.py
+uv run streamlit run src/car_price_api/streamlit_app.py
 ```
 
-Set `API_URL` if the API isn't on the default `http://127.0.0.1:8000/predict`.
-
-## Retrain the model
+### 5. Retrain the model (optional)
 
 ```bash
-python -m car_price_api.train
+uv run python -m car_price_api.train
 ```
 
-This reads `data/cardekho_data.csv` and overwrites the files in `models/`.
+---
 
-## Notes
+## 📡 API Usage
 
-- `Car_Name` and `Owner` are one-hot encoded the same way during training and
-  inference (`feature_columns.pkl` records the exact training column order).
-  Car names not seen during training simply fall back to all-zero indicator
-  columns for that name.
+**Endpoint:** `POST /predict`
+
+**Request body:**
+
+```json
+{
+  "Car_Name": "ritz",
+  "Year": 2014,
+  "Present_Price": 5.59,
+  "Kms_Driven": 27000,
+  "Fuel_Type": "Petrol",
+  "Seller_Type": "Dealer",
+  "Transmission": "Manual",
+  "Owner": 0
+}
+```
+
+**Example with curl:**
+
+```bash
+curl -X POST http://127.0.0.1:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+        "Car_Name": "ritz",
+        "Year": 2014,
+        "Present_Price": 5.59,
+        "Kms_Driven": 27000,
+        "Fuel_Type": "Petrol",
+        "Seller_Type": "Dealer",
+        "Transmission": "Manual",
+        "Owner": 0
+      }'
+```
+
+**Response:**
+
+```json
+{
+  "prediction_price": 3.81
+}
+```
+
+---
+
+## 🧠 How It Works
+
+1. The RandomForest model is trained on the CarDekho used car dataset (`train.py`).
+2. Categorical features (`Fuel_Type`, `Seller_Type`, `Transmission`, `Owner`, `Car_Name`) are one-hot encoded.
+3. The exact training column order is saved to `feature_columns.pkl` so inference always matches training.
+4. At inference time, incoming requests are preprocessed the same way and aligned to those columns before prediction.
+
+---
+
+<p align="center">
+  Made with ❤️ by <strong>Curious Arvind</strong> using FastAPI, RandomForest, and uv.
+</p>

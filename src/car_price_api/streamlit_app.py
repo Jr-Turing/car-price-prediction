@@ -1,11 +1,9 @@
-import os
-
 import requests
 import streamlit as st
 
 st.set_page_config(page_title="Car Price Prediction", page_icon="🚗", layout="centered")
 
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict")
+API_URL = ("https://car-price-prediction-4x40.onrender.com/predict" or "http://127.0.0.1:8000/predict") # change if your endpoint differs
 
 st.title("🚗 Car Price Prediction")
 st.caption(
